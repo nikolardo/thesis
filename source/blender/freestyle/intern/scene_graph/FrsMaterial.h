@@ -30,6 +30,17 @@
 
 #include "../system/FreestyleConfig.h"
 
+#include "BKE_global.h"
+
+#include "DNA_material_types.h"
+
+#include "BLI_utildefines.h"
+
+#include <sstream>
+
+#include <stdlib.h>
+
+
 #ifdef WITH_CXX_GUARDEDALLOC
 #include "MEM_guardedalloc.h"
 #endif
@@ -59,9 +70,11 @@ public:
 	 *      The shininess coefficient.
 	 *    \param iPriority
 	 *      The line color priority.
+	 *    \param origMat
+	 *      The original Material this FrsMaterial was built from
 	 */
 	inline FrsMaterial(const float *iLine, const float *iDiffuse, const float *iAmbiant, const float *iSpecular,
-	                   const float *iEmission, const float iShininess, const int iPriority);
+	                   const float *iEmission, const float iShininess, const int iPriority, Material *iOrigMat);
 
 	/*! Copy constructor */
 	inline FrsMaterial(const FrsMaterial& m);
@@ -303,6 +316,18 @@ public:
 	 */
 	inline void setPriority(const int priority);
 
+	/*! Sets the original Material.
+	 *    \param priority
+	 *      origMat
+	 */
+	inline void setOrigMat(Material *origMat);
+
+	/*! Gets the original Material.
+	 *    \param priority
+	 *      origMat
+	 */
+	inline Material* getOrigMat();
+
 	/* operators */
 	inline FrsMaterial& operator=(const FrsMaterial& m);
 	inline bool operator!=(const FrsMaterial& m) const;
@@ -317,6 +342,7 @@ private:
 	float Emission[4];
 	float Shininess;
 	int Priority;
+	Material *origMat;
 
 #ifdef WITH_CXX_GUARDEDALLOC
 	MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:FrsMaterial")
@@ -345,7 +371,7 @@ FrsMaterial::FrsMaterial()
 }
 
 FrsMaterial::FrsMaterial(const float *iLine, const float *iDiffuse, const float *iAmbiant, const float *iSpecular,
-                         const float *iEmission, const float iShininess, const int iPriority)
+                         const float *iEmission, const float iShininess, const int iPriority, Material *iOrigMat)
 {
 	for (int i = 0; i < 4; i++) {
 		Line[i] = iLine[i];
@@ -357,6 +383,7 @@ FrsMaterial::FrsMaterial(const float *iLine, const float *iDiffuse, const float 
 
 	Shininess = iShininess;
 	Priority = iPriority;
+	origMat = iOrigMat;
 }
 
 FrsMaterial::FrsMaterial(const FrsMaterial& m)
@@ -416,6 +443,16 @@ void FrsMaterial::setEmission(const float r, const float g, const float b, const
 void FrsMaterial::setShininess(const float s)
 {
 	Shininess = s;
+}
+
+void FrsMaterial::setOrigMat(Material *oM)
+{
+	origMat = oM;
+}
+
+Material* FrsMaterial::getOrigMat()
+{
+	return origMat;
 }
 
 void FrsMaterial::setPriority(const int priority)

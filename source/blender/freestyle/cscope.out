@@ -1,0 +1,215 @@
+cscope 15 $HOME/Capstone/blender-git/blender/source/blender/freestyle               0000001236
+	@FRS_freestyle.h
+
+21 #iâdeà
+__FRS_FREESTYLE_H__
+
+
+22 
+	#__FRS_FREESTYLE_H__
+
+
+	)
+
+28 #ifdeà
+__ýlu¥lus
+
+
+32 
+R’d”
+;
+
+33 
+M©”Ÿl
+;
+
+34 
+F»e¡yËCÚfig
+;
+
+35 
+F»e¡yËLšeStyË
+;
+
+37 
+	sF»e¡yËGlob®s
+ {
+
+38 
+SûÃ
+ *
+sûÃ
+;
+
+41 
+v›wpošt
+[3];
+
+42 
+mv
+[4][4];
+
+43 
+´oj
+[4][4];
+
+44 
+v›wpÜt
+[4];
+
+47 
+F»e¡yËGlob®s
+ 
+g_ä“¡yË
+;
+
+50 
+FRS_š™Ÿlize
+();
+
+51 
+FRS_£t_cÚ‹xt
+(
+bCÚ‹xt
+ *
+C
+);
+
+52 
+FRS_»ad_fže
+(
+bCÚ‹xt
+ *
+C
+);
+
+53 
+FRS_is_ä“¡yË_’abËd
+(
+SûÃR’d”Lay”
+ *
+¤l
+);
+
+54 
+FRS_š™_¡roke_»nd””
+(
+R’d”
+ *
+»
+);
+
+55 
+FRS_begš_¡roke_»nd”šg
+(
+R’d”
+ *
+»
+);
+
+56 
+R’d”
+ *
+FRS_do_¡roke_»nd”šg
+(R’d” *
+»
+, 
+SûÃR’d”Lay”
+ *
+¤l
+, 
+»nd”
+);
+
+57 
+FRS_’d_¡roke_»nd”šg
+(
+R’d”
+ *
+»
+);
+
+58 
+FRS_ä“_v›w_m­_ÿche
+();
+
+59 
+FRS_compos™e_»suÉ
+(
+R’d”
+ *
+»
+, 
+SûÃR’d”Lay”
+ *
+¤l
+, R’d” *
+ä“¡yË_»nd”
+);
+
+60 
+FRS_ex™
+();
+
+63 
+FRS_cÝy_aùive_lše£t
+(
+F»e¡yËCÚfig
+ *
+cÚfig
+);
+
+64 
+FRS_·¡e_aùive_lše£t
+(
+F»e¡yËCÚfig
+ *
+cÚfig
+);
+
+65 
+FRS_d–‘e_aùive_lše£t
+(
+F»e¡yËCÚfig
+ *
+cÚfig
+);
+
+66 
+boÞ
+ 
+FRS_move_aùive_lše£t
+(
+F»e¡yËCÚfig
+ *
+cÚfig
+, 
+dœeùiÚ
+);
+
+69 
+M©”Ÿl
+ *
+FRS_ü—‹_¡roke_m©”Ÿl
+(
+Maš
+ *
+bmaš
+, 
+F»e¡yËLšeStyË
+ *
+lše¡yË
+);
+
+71 #ifdeà
+__ýlu¥lus
+
+
+	@
+1
+.
+1
+/usr/include
+1
+16
+FRS_freestyle.h

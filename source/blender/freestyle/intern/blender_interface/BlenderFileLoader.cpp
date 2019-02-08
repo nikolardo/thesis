@@ -30,6 +30,8 @@
 
 #include <sstream>
 
+#include <stdlib.h>
+
 namespace Freestyle {
 
 BlenderFileLoader::BlenderFileLoader(Render *re, SceneRenderLayer *srl)
@@ -158,24 +160,24 @@ int BlenderFileLoader::countClippedFaces(float v1[3], float v2[3], float v3[3], 
 		sum += clip[i];
 	}
 	switch (numClipped) {
-		case 0:
+	case 0:
+		numTris = 1; // triangle
+		break;
+	case 1:
+		numTris = 2; // tetragon
+		break;
+	case 2:
+		if (sum == 0)
+			numTris = 3; // pentagon
+		else
 			numTris = 1; // triangle
-			break;
-		case 1:
+		break;
+	case 3:
+		if (sum == 3 || sum == -3)
+			numTris = 0;
+		else
 			numTris = 2; // tetragon
-			break;
-		case 2:
-			if (sum == 0)
-				numTris = 3; // pentagon
-			else
-				numTris = 1; // triangle
-			break;
-		case 3:
-			if (sum == 3 || sum == -3)
-				numTris = 0;
-			else
-				numTris = 2; // tetragon
-			break;
+		break;
 	}
 	return numTris;
 }
@@ -588,11 +590,15 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			em4 = (vlr->freestyle_edge_mark & R_EDGE_V4V1) != 0;
 		}
 
+
 		Material *mat = vlr->mat;
 		if (mat) {
 			tmpMat.setLine(mat->line_col[0], mat->line_col[1], mat->line_col[2], mat->line_col[3]);
 			tmpMat.setDiffuse(mat->r, mat->g, mat->b, mat->alpha);
 			tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);
+			tmpMat.setOrigMat(mat);
+			//testing
+			//tmpMat.setDiffuse(tmpMat.getOrigMat()->specr, tmpMat.getOrigMat()->specg, tmpMat.getOrigMat()->specb, tmpMat.getOrigMat()->spectra);
 			float s = 1.0 * (mat->har + 1) / 4 ; // in Blender: [1;511] => in OpenGL: [0;128]
 			if (s > 128.f)
 				s = 128.f;
@@ -616,8 +622,8 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			{
 				if (*it == mat) {
 					ls.currentMIndex = i;
-					found = true;
-					break;
+					found = false;
+					//break;
 				}
 			}
 
@@ -668,7 +674,7 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 		}
 	}
 
-	// We might have several times the same vertex. We want a clean
+	// We might have several times the same vertex. We want a clean 
 	// shape with no real-vertex. Here, we are making a cleaning pass.
 	float *cleanVertices = NULL;
 	unsigned int cvSize;
