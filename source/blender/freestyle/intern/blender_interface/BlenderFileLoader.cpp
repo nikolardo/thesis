@@ -598,7 +598,6 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);
 			tmpMat.setOrigMat(mat);
 			//testing
-			//testing
 			//tmpMat.setDiffuse(tmpMat.getOrigMat()->specr, tmpMat.getOrigMat()->specg, tmpMat.getOrigMat()->specb, tmpMat.getOrigMat()->spectra);
 			float s = 1.0 * (mat->har + 1) / 4 ; // in Blender: [1;511] => in OpenGL: [0;128]
 			if (s > 128.f)
