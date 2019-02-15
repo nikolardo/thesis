@@ -399,7 +399,6 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 	float n1[3], n2[3], n3[3], n4[3], facenormal[3];
 	int clip_1[3], clip_2[3];
 	int wire_material = 0;
-	cout<<(obr->rayobi->ob);
 	for (int a = 0; a < obr->totvlak; a++) {
 		if ((a & 255) == 0)
 			vlr = obr->vlaknodes[a>>8].vlak;
@@ -593,6 +592,7 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 
 
 		Material *mat = vlr->mat;
+		cout<<mat->texco;
 		if (mat) {
 			tmpMat.setLine(mat->line_col[0], mat->line_col[1], mat->line_col[2], mat->line_col[3]);
 			tmpMat.setDiffuse(mat->r, mat->g, mat->b, mat->alpha);
