@@ -94,6 +94,8 @@ NodeGroup *BlenderFileLoader::Load()
 	int id = 0;
 	unsigned cnt = 1;
 	unsigned cntStep = (unsigned)ceil(0.01f * _re->totinstance);
+    //for each ObjectInstanceRen in the Render,
+    //char *name = original object id name
 	for (obi = (ObjectInstanceRen *)_re->instancetable.first; obi; obi = obi->next) {
 		if (_pRenderMonitor) {
 			if (_pRenderMonitor->testBreak())
@@ -109,10 +111,13 @@ NodeGroup *BlenderFileLoader::Load()
 
 		if (!(obi->lay & _srl->lay))
 			continue;
+        // *name = original object id name
 		char *name = obi->ob->id.name;
 		//printf("%c%c:%s\n", name[0], name[1], name+2);
 		//print_m4("obi->mat", obi->mat);
 
+        //if ObjectInstanceRen.ObjectRen.totvlak (it's an int) > 0: insertShapeNode(obi, ++id)
+        //okay so the shapenode insertion is what triggers other parts of this file, and it holds the obi, which has a pointer to ob, so all good
 		if (obi->obr->totvlak > 0) {
 			insertShapeNode(obi, ++id);
 		}
