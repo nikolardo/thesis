@@ -392,13 +392,16 @@ bool BlenderFileLoader::testEdgeRotation(float v1[3], float v2[3], float v3[3], 
 
 void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 {
-	ObjectRen *obr = obi->obr;
+    ObjectRen *obr = obi->obr;          //notably, ObjectRen still has a pointer to Object ob
 	char *name = obi->ob->id.name + 2;
 
 	// We parse vlak nodes and count the number of faces after the clipping by
 	// the near and far view planes is applied (Note: mesh vertices are in the
 	// camera coordinate system).
-	VlakRen *vlr = NULL;
+    VlakRen *vlr = NULL;
+    //VlakRen has a pointer to Material mat and to four VertRen v1, v2, v3, v4
+    //VertRen has a 3-array of co[0] (coordinates?), also n[3], also a single float *orco, and a couple other bullshits
+    //so obi still has all the info we need, whereas VlakRen has some (mat) and VertRen has none (just coordinates)
 	unsigned numFaces = 0;
 	float v1[3], v2[3], v3[3], v4[3];
 	float n1[3], n2[3], n3[3], n4[3], facenormal[3];
@@ -406,7 +409,7 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 	int wire_material = 0;
 	for (int a = 0; a < obr->totvlak; a++) {
 		if ((a & 255) == 0)
-			vlr = obr->vlaknodes[a>>8].vlak;
+            vlr = obr->vlaknodes[a>>8].vlak;  //vlak is a VlakRen, thus vlr is a VlakRen
 		else
 			vlr++;
 		if (vlr->mat->mode & MA_ONLYCAST)
@@ -415,13 +418,13 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			wire_material = 1;
 			continue;
 		}
-		copy_v3_v3(v1, vlr->v1->co);
-		copy_v3_v3(v2, vlr->v2->co);
-		copy_v3_v3(v3, vlr->v3->co);
+        copy_v3_v3(v1, vlr->v1->co);    //copies coordinates of vlr.v1.co into v1
+        copy_v3_v3(v2, vlr->v2->co);    //etc
+        copy_v3_v3(v3, vlr->v3->co);    //etc
 		if (vlr->v4)
-			copy_v3_v3(v4, vlr->v4->co);
+            copy_v3_v3(v4, vlr->v4->co);    //etc
 		if (obi->flag & R_TRANSFORMED) {
-			mul_m4_v3(obi->mat, v1);
+            mul_m4_v3(obi->mat, v1);    //matrix multiply?
 			mul_m4_v3(obi->mat, v2);
 			mul_m4_v3(obi->mat, v3);
 			if (vlr->v4)
@@ -466,8 +469,8 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 	NodeGroup *currentMesh = new NodeGroup;
 	NodeShape *shape = new NodeShape;
 
-	unsigned vSize = 3 * 3 * numFaces;
-	float *vertices = new float[vSize];
+    unsigned vSize = 3 * 3 * numFaces;  //3 vertices per face, 3 coordinates per vertex
+    float *vertices = new float[vSize]; //make an array of floats called vertices, [XYZXYZXYZ]
 	unsigned nSize = vSize;
 	float *normals = new float[nSize];
 	unsigned *numVertexPerFaces = new unsigned[numFaces];
@@ -483,23 +486,23 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 
 	IndexedFaceSet::FaceEdgeMark *faceEdgeMarks = new IndexedFaceSet::FaceEdgeMark[numFaces];
 
-	unsigned viSize = 3 * numFaces;
-	unsigned *VIndices = new unsigned[viSize];
-	unsigned niSize = viSize;
-	unsigned *NIndices = new unsigned[niSize];
-	unsigned *MIndices = new unsigned[viSize]; // Material Indices
+    unsigned viSize = 3 * numFaces;  //number of vertex indices is 3x the number of faces?
+    unsigned *VIndices = new unsigned[viSize];  //create an array VIndices that's that big
+    unsigned niSize = viSize;                   //this is the same size (normal indices?)
+    unsigned *NIndices = new unsigned[niSize];  //this is the same length (array of normal indices)
+    unsigned *MIndices = new unsigned[viSize];  //array of Material indices
 
 	struct LoaderState ls;
-	ls.pv = vertices;
-	ls.pn = normals;
-	ls.pm = faceEdgeMarks;
-	ls.pvi = VIndices;
-	ls.pni = NIndices;
-	ls.pmi = MIndices;
+    ls.pv = vertices;           //pointer to vertices (currently empty)
+    ls.pn = normals;            //pointer to normals (same)
+    ls.pm = faceEdgeMarks;      //pointer to Marks
+    ls.pvi = VIndices;          //pointer to vertex indices
+    ls.pni = NIndices;          //pointer no Normal Indices
+    ls.pmi = MIndices;          //pointer to Material Indices
 	ls.currentIndex = 0;
 	ls.currentMIndex = 0;
 
-	FrsMaterial tmpMat;
+    FrsMaterial tmpMat;         //temporary FrsMaterial to build before adding to the [scene]
 
 	// We parse the vlak nodes again and import meshes while applying the clipping
 	// by the near and far view planes.
@@ -511,13 +514,13 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			vlr++;
 		if ((vlr->mat->mode & MA_ONLYCAST) || vlr->mat->material_type == MA_TYPE_WIRE)
 			continue;
-		copy_v3_v3(v1, vlr->v1->co);
+        copy_v3_v3(v1, vlr->v1->co);    //same copies as before?
 		copy_v3_v3(v2, vlr->v2->co);
 		copy_v3_v3(v3, vlr->v3->co);
 		if (vlr->v4)
 			copy_v3_v3(v4, vlr->v4->co);
 		if (obi->flag & R_TRANSFORMED) {
-			mul_m4_v3(obi->mat, v1);
+            mul_m4_v3(obi->mat, v1);        //same multiplies as before? note: obi.mat is a 4x4 matrix, not a material
 			mul_m4_v3(obi->mat, v2);
 			mul_m4_v3(obi->mat, v3);
 			if (vlr->v4)
@@ -529,16 +532,16 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 		if (vlr->v4)
 			v4[2] += _z_offset;
 		if (_smooth && (vlr->flag & R_SMOOTH)) {
-			copy_v3_v3(n1, vlr->v1->n);
+            copy_v3_v3(n1, vlr->v1->n);             //copy the normal
 			copy_v3_v3(n2, vlr->v2->n);
 			copy_v3_v3(n3, vlr->v3->n);
 			if (vlr->v4)
 				copy_v3_v3(n4, vlr->v4->n);
 			if (obi->flag & R_TRANSFORMED) {
-				mul_m3_v3(obi->nmat, n1);
+                mul_m3_v3(obi->nmat, n1);       //multiply the normal
 				mul_m3_v3(obi->nmat, n2);
 				mul_m3_v3(obi->nmat, n3);
-				normalize_v3(n1);
+                normalize_v3(n1);           //normalize
 				normalize_v3(n2);
 				normalize_v3(n3);
 				if (vlr->v4) {
@@ -567,6 +570,8 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 
 		unsigned int numTris_1, numTris_2;
 		bool edge_rotation;
+
+        //I think the following countClippedFaces are for clipping by near & far
 		if (!vlr->v4 || !testEdgeRotation(v1, v2, v3, v4)) {
 			numTris_1 = countClippedFaces(v1, v2, v3, clip_1);
 			numTris_2 = (!vlr->v4) ? 0 : countClippedFaces(v1, v3, v4, clip_2);
@@ -582,7 +587,8 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 		}
 		if (numTris_1 == 0 && numTris_2 == 0)
 			continue;
-		bool fm, em1, em2, em3, em4;
+        //freestyle edge marks
+        bool fm, em1, em2, em3, em4; //face mark, edge mark 1, edge mark 2, edge mark 3, edge mark 4
 		fm = (vlr->freestyle_face_mark) != 0;
 		em1 = (vlr->freestyle_edge_mark & R_EDGE_V1V2) != 0;
 		em2 = (vlr->freestyle_edge_mark & R_EDGE_V2V3) != 0;
@@ -595,23 +601,23 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			em4 = (vlr->freestyle_edge_mark & R_EDGE_V4V1) != 0;
 		}
 
-
+        //Here we've got our pointer to Material mat
 		Material *mat = vlr->mat;
-		cout<<mat->texco;
 		if (mat) {
-			tmpMat.setLine(mat->line_col[0], mat->line_col[1], mat->line_col[2], mat->line_col[3]);
-			tmpMat.setDiffuse(mat->r, mat->g, mat->b, mat->alpha);
-			tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);
-			tmpMat.setOrigMat(mat);
+            tmpMat.setLine(mat->line_col[0], mat->line_col[1], mat->line_col[2], mat->line_col[3]); //sets freestyle line color
+            tmpMat.setDiffuse(mat->r, mat->g, mat->b, mat->alpha);                                  //sets diffuse
+            tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);                   //sets specular
+            tmpMat.setOrigMat(mat);                                                                 //I set the original material
 			//testing
 			//tmpMat.setDiffuse(tmpMat.getOrigMat()->specr, tmpMat.getOrigMat()->specg, tmpMat.getOrigMat()->specb, tmpMat.getOrigMat()->spectra);
 			float s = 1.0 * (mat->har + 1) / 4 ; // in Blender: [1;511] => in OpenGL: [0;128]
 			if (s > 128.f)
 				s = 128.f;
-			tmpMat.setShininess(s);
-			tmpMat.setPriority(mat->line_priority);
+            tmpMat.setShininess(s);     //sets shininess
+            tmpMat.setPriority(mat->line_priority);     //sets line priority
 		}
 
+        //if the list is empty, initiate both lists
 		if (meshMaterials.empty()) {
 			meshMaterials.push_back(mat);
 			meshFrsMaterials.push_back(tmpMat);
@@ -621,19 +627,21 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			// find if the Blender material is already in the list
 			unsigned int i = 0;
 			bool found = false;
-
+            //for each vector of materials in the scene?
 			for (vector<Material *>::iterator it = meshMaterials.begin(), itend = meshMaterials.end();
 			     it != itend;
 			     it++, i++)
 			{
 				if (*it == mat) {
+                    //if found, set the current index & also say it's found, & stop searching
 					ls.currentMIndex = i;
-					found = false;
-					//break;
+                    found = true;
+                    break;
 				}
 			}
 
 			if (!found) {
+                //if not found, add the material to meshMaterials, add the FrsMaterial to meshFrsMaterials
 				meshMaterials.push_back(mat);
 				meshFrsMaterials.push_back(tmpMat);
 				ls.currentMIndex = meshFrsMaterials.size() - 1;
@@ -643,6 +651,7 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 		float triCoords[5][3], triNormals[5][3];
 		bool edgeMarks[5]; // edgeMarks[i] is for the edge between i-th and (i+1)-th vertices
 
+        //deal with triangles, clipping, rotation, etc? hopefully not relevant
 		if (numTris_1 > 0) {
 			if (!edge_rotation) {
 				clipTriangle(numTris_1, triCoords, v1, v2, v3, triNormals, n1, n2, n3,
@@ -661,6 +670,7 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			}
 		}
 
+        //same
 		if (numTris_2 > 0) {
 			if (!edge_rotation) {
 				clipTriangle(numTris_2, triCoords, v1, v3, v4, triNormals, n1, n3, n4,
@@ -812,6 +822,8 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 	}
 
 	// Create the IndexedFaceSet with the retrieved attributes
+    // This face set is then added to the current mesh, which is added to the scene.
+    // The IndexedFaceSet has got arrays of vertices in [XYZXYZXYZ] form instead of any kind of an object at all!
 	IndexedFaceSet *rep;
 	rep = new IndexedFaceSet(cleanVertices, cvSize, cleanNormals, cnSize, marray, meshFrsMaterials.size(), 0, 0,
 	                         numFaces, numVertexPerFaces, faceStyle, faceEdgeMarks, cleanVIndices, viSize,
