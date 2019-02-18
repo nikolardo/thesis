@@ -402,17 +402,17 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
     //my code:
     Mesh *data = (Mesh *)obr->ob->data;
     MVert *verts = data->mvert;
+
+#if 0
+
     int size = sizeof(verts);
     printf("%i\n",size);
     for (int i = 0; i < size; i++){
         print_v3("vertex", verts[i].co);
     }
-#if 0
-        print_v3("v1", verts[0].co);
-        print_v3("v2", verts[1].co);
-        print_v3("v3", verts[2].co);
-        }
+
 #endif
+
     // end my code for this section
     // So I have access to vertices!
 
