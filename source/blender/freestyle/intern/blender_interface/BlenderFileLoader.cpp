@@ -32,6 +32,8 @@
 
 #include <stdlib.h>
 
+#include "DNA_object_types.h"
+
 namespace Freestyle {
 
 BlenderFileLoader::BlenderFileLoader(Render *re, SceneRenderLayer *srl)
@@ -403,13 +405,25 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
     //VertRen has a 3-array of co[0] (coordinates?), also n[3], also a single float *orco, and a couple other bullshits
     //so obi still has all the info we need, whereas VlakRen has some (mat) and VertRen has none (just coordinates)
 	unsigned numFaces = 0;
-	float v1[3], v2[3], v3[3], v4[3];
+//    if (obi->ob){
+//        if (obi->ob->mat){
+//            if(obi->ob->mat[0]->b){
+//               printf("%f\n",obi->ob->mat[0]->b);
+
+//            }
+//        }
+//    }
+//    fflush(stdout);
+    float v1[3], v2[3], v3[3], v4[3];
 	float n1[3], n2[3], n3[3], n4[3], facenormal[3];
 	int clip_1[3], clip_2[3];
 	int wire_material = 0;
+    //Material from ObjectRen.VlakTable.VlakRen.Mat
+    //Vertices from ObjectRen.VlakTable.VlakRen.VertRen
+    //Vertex Coordinates from ObjectRen.VlakTable.VlakRen.VertRen.co (as [x, y, z])
 	for (int a = 0; a < obr->totvlak; a++) {
 		if ((a & 255) == 0)
-            vlr = obr->vlaknodes[a>>8].vlak;  //vlak is a VlakRen, thus vlr is a VlakRen
+            vlr = obr->vlaknodes[a>>8].vlak;  //vlak is a VlakRen, vlr is a VlakRen
 		else
 			vlr++;
 		if (vlr->mat->mode & MA_ONLYCAST)
