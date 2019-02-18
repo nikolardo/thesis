@@ -34,6 +34,8 @@
 
 #include "DNA_object_types.h"
 
+#include "DNA_mesh_types.h"
+
 namespace Freestyle {
 
 BlenderFileLoader::BlenderFileLoader(Render *re, SceneRenderLayer *srl)
@@ -397,6 +399,23 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
     ObjectRen *obr = obi->obr;          //notably, ObjectRen still has a pointer to Object ob
 	char *name = obi->ob->id.name + 2;
 
+    //my code:
+    Mesh *data = (Mesh *)obr->ob->data;
+    MVert *verts = data->mvert;
+    int size = sizeof(verts);
+    printf("%i\n",size);
+    for (int i = 0; i < size; i++){
+        print_v3("vertex", verts[i].co);
+    }
+#if 0
+        print_v3("v1", verts[0].co);
+        print_v3("v2", verts[1].co);
+        print_v3("v3", verts[2].co);
+        }
+#endif
+    // end my code for this section
+    // So I have access to vertices!
+
 	// We parse vlak nodes and count the number of faces after the clipping by
 	// the near and far view planes is applied (Note: mesh vertices are in the
 	// camera coordinate system).
@@ -405,6 +424,7 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
     //VertRen has a 3-array of co[0] (coordinates?), also n[3], also a single float *orco, and a couple other bullshits
     //so obi still has all the info we need, whereas VlakRen has some (mat) and VertRen has none (just coordinates)
 	unsigned numFaces = 0;
+
 //    if (obi->ob){
 //        if (obi->ob->mat){
 //            if(obi->ob->mat[0]->b){
