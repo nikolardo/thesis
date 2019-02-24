@@ -643,7 +643,7 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
             tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);                   //sets specular
             tmpMat.setOrigMat(mat);                                                                 //I set the original material
             //tmpMat.setOrigObj(obr->ob);       //push through the original object
-            //tmpMat.setOrigVer()             //push through the original vertex here
+            //tmpMat.setOrigVer()             //push through the original vertex here. This will need to be gotten somehow from a combination of the coordinates and the original object? Or, leave the coordinates as they are and do that at the end. (Should figure out how to do it here.)
             //testing //tmpMat.setDiffuse(tmpMat.getOrigMat()->specr, tmpMat.getOrigMat()->specg, tmpMat.getOrigMat()->specb, tmpMat.getOrigMat()->spectra);
 			float s = 1.0 * (mat->har + 1) / 4 ; // in Blender: [1;511] => in OpenGL: [0;128]
 			if (s > 128.f)
