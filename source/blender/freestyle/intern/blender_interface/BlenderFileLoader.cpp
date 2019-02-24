@@ -642,8 +642,9 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
             tmpMat.setDiffuse(mat->r, mat->g, mat->b, mat->alpha);                                  //sets diffuse
             tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);                   //sets specular
             tmpMat.setOrigMat(mat);                                                                 //I set the original material
-			//testing
-			//tmpMat.setDiffuse(tmpMat.getOrigMat()->specr, tmpMat.getOrigMat()->specg, tmpMat.getOrigMat()->specb, tmpMat.getOrigMat()->spectra);
+            //tmpMat.setOrigObj(obr->ob);       //push through the original object
+            //tmpMat.setOrigVer()             //push through the original vertex here
+            //testing //tmpMat.setDiffuse(tmpMat.getOrigMat()->specr, tmpMat.getOrigMat()->specg, tmpMat.getOrigMat()->specb, tmpMat.getOrigMat()->spectra);
 			float s = 1.0 * (mat->har + 1) / 4 ; // in Blender: [1;511] => in OpenGL: [0;128]
 			if (s > 128.f)
 				s = 128.f;
@@ -661,18 +662,19 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			// find if the Blender material is already in the list
 			unsigned int i = 0;
 			bool found = false;
-            //for each vector of materials in the scene?
-			for (vector<Material *>::iterator it = meshMaterials.begin(), itend = meshMaterials.end();
-			     it != itend;
-			     it++, i++)
-			{
-				if (*it == mat) {
-                    //if found, set the current index & also say it's found, & stop searching
-					ls.currentMIndex = i;
-                    found = true;
-                    break;
-				}
-			}
+//comment out the check to see if the material already exists; we'll need one each for this to work generally I think
+//            //for each vector of materials in the scene?
+//			for (vector<Material *>::iterator it = meshMaterials.begin(), itend = meshMaterials.end();
+//			     it != itend;
+//			     it++, i++)
+//			{
+//				if (*it == mat) {
+//                    //if found, set the current index & also say it's found, & stop searching
+//					ls.currentMIndex = i;
+//                    found = true;
+//                    //break;
+//				}
+//			}
 
 			if (!found) {
                 //if not found, add the material to meshMaterials, add the FrsMaterial to meshFrsMaterials
