@@ -397,7 +397,7 @@ bool BlenderFileLoader::testEdgeRotation(float v1[3], float v2[3], float v3[3], 
 void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 {
     ObjectRen *obr = obi->obr;          //notably, ObjectRen still has a pointer to Object ob
-	char *name = obi->ob->id.name + 2;
+    char *name = obi->ob->id.name + 2;
 
     //my code:
     Mesh *data = (Mesh *)obr->ob->data;
@@ -434,10 +434,12 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 //        }
 //    }
 //    fflush(stdout);
+
     float v1[3], v2[3], v3[3], v4[3];
 	float n1[3], n2[3], n3[3], n4[3], facenormal[3];
 	int clip_1[3], clip_2[3];
 	int wire_material = 0;
+
     //Material from ObjectRen.VlakTable.VlakRen.Mat
     //Vertices from ObjectRen.VlakTable.VlakRen.VertRen
     //Vertex Coordinates from ObjectRen.VlakTable.VlakRen.VertRen.co (as [x, y, z])
@@ -540,7 +542,7 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 
 	// We parse the vlak nodes again and import meshes while applying the clipping
 	// by the near and far view planes.
-	int p;
+    int p;
 	for (p = 0; p < obr->totvlak; ++p) { // we parse the faces of the mesh
 		if ((p & 255) == 0)
 			vlr = obr->vlaknodes[p>>8].vlak;
@@ -642,8 +644,8 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
             tmpMat.setDiffuse(mat->r, mat->g, mat->b, mat->alpha);                                  //sets diffuse
             tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);                   //sets specular
             tmpMat.setOrigMat(mat);                                                                 //I set the original material
-            //tmpMat.setOrigObj(obr->ob);       //push through the original object
-            //tmpMat.setOrigVer()             //push through the original vertex here. This will need to be gotten somehow from a combination of the coordinates and the original object? Or, leave the coordinates as they are and do that at the end. (Should figure out how to do it here.)
+            tmpMat.setOrigObj(obr->ob);       //push through the original object
+            //tmpMat.setOrigVert()             //push through the original vertex here. This will need to be gotten somehow from a combination of the coordinates and the original object? Or, leave the coordinates as they are and do that at the end. (Should figure out how to do it here.)
             //testing //tmpMat.setDiffuse(tmpMat.getOrigMat()->specr, tmpMat.getOrigMat()->specg, tmpMat.getOrigMat()->specb, tmpMat.getOrigMat()->spectra);
 			float s = 1.0 * (mat->har + 1) / 4 ; // in Blender: [1;511] => in OpenGL: [0;128]
 			if (s > 128.f)

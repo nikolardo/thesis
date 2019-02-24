@@ -92,6 +92,8 @@ static int FrsMaterial_init(BPy_FrsMaterial *self, PyObject *args, PyObject *kwd
 	static const char *kwlist_1[] = {"brother", NULL};
 	static const char *kwlist_2[] = {"line", "diffuse", "ambient", "specular", "emission", "shininess", "priority", NULL};
 	Material *origMat;
+    Object *origObj;
+    MVert *origVert;
 	PyObject *brother = 0;
 	float line[4], diffuse[4], ambient[4], specular[4], emission[4], shininess;
 	int priority;
@@ -118,7 +120,7 @@ static int FrsMaterial_init(BPy_FrsMaterial *self, PyObject *args, PyObject *kwd
 	                                     convert_v4, emission,
 	                                     &shininess, &priority))
 	{
-		self->m = new FrsMaterial(line, diffuse, ambient, specular, emission, shininess, priority, origMat);
+        self->m = new FrsMaterial(line, diffuse, ambient, specular, emission, shininess, priority, origMat, origObj, origVert);
 	}
 	else {
 		PyErr_SetString(PyExc_TypeError, "invalid argument(s)");

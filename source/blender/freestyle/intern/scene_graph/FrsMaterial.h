@@ -34,6 +34,10 @@
 
 #include "DNA_material_types.h"
 
+#include "DNA_object_types.h"
+
+#include "DNA_meshdata_types.h"
+
 #include "BLI_utildefines.h"
 
 #include <sstream>
@@ -70,11 +74,15 @@ public:
 	 *      The shininess coefficient.
 	 *    \param iPriority
 	 *      The line color priority.
-	 *    \param origMat
+     *    \param iOrigMat
 	 *      The original Material this FrsMaterial was built from
+     *    \param iOrigObj
+     *      The original Object that this FrsMaterial was built from
+     *    \param iOrigVert
+     *      The original Vertex this FrsMaterial was built from
 	 */
 	inline FrsMaterial(const float *iLine, const float *iDiffuse, const float *iAmbiant, const float *iSpecular,
-	                   const float *iEmission, const float iShininess, const int iPriority, Material *iOrigMat);
+                       const float *iEmission, const float iShininess, const int iPriority, Material *iOrigMat, Object *iOrigObj, MVert *iOrigVert);
 
 	/*! Copy constructor */
 	inline FrsMaterial(const FrsMaterial& m);
@@ -316,17 +324,40 @@ public:
 	 */
 	inline void setPriority(const int priority);
 
-	/*! Sets the original Material.
-	 *    \param priority
-	 *      origMat
-	 */
-	inline void setOrigMat(Material *origMat);
+    /*! Sets the original Material.
+     *    \param priority
+     *      origMat
+     */
+    inline void setOrigMat(Material *origMat);
 
-	/*! Gets the original Material.
-	 *    \param priority
-	 *      origMat
-	 */
-	inline Material* getOrigMat();
+    /*! Gets the original Material.
+     *    \param priority
+     *      origMat
+     */
+    inline Material* getOrigMat();
+
+    /*! Sets the original Object.
+     *    \param priority
+     *      origMat
+     */
+    inline void setOrigObj(Object *origObj);
+
+    /*! Gets the original Material.
+     *    \param priority
+     *      origMat
+     */
+    inline Object* getOrigObj();
+    /*! Sets the original Material.
+     *    \param priority
+     *      origMat
+     */
+    inline void setOrigVert(MVert *origVert);
+
+    /*! Gets the original Material.
+     *    \param priority
+     *      origMat
+     */
+    inline MVert* getOrigVert();
 
 	/* operators */
 	inline FrsMaterial& operator=(const FrsMaterial& m);
@@ -343,6 +374,8 @@ private:
 	float Shininess;
 	int Priority;
 	Material *origMat;
+    Object *origObj;
+    MVert *origVert;
 
 #ifdef WITH_CXX_GUARDEDALLOC
 	MEM_CXX_CLASS_ALLOC_FUNCS("Freestyle:FrsMaterial")
@@ -371,7 +404,7 @@ FrsMaterial::FrsMaterial()
 }
 
 FrsMaterial::FrsMaterial(const float *iLine, const float *iDiffuse, const float *iAmbiant, const float *iSpecular,
-                         const float *iEmission, const float iShininess, const int iPriority, Material *iOrigMat)
+                         const float *iEmission, const float iShininess, const int iPriority, Material *iOrigMat, Object *iOrigObj, MVert *iOrigVert)
 {
 	for (int i = 0; i < 4; i++) {
 		Line[i] = iLine[i];
@@ -384,6 +417,8 @@ FrsMaterial::FrsMaterial(const float *iLine, const float *iDiffuse, const float 
 	Shininess = iShininess;
 	Priority = iPriority;
 	origMat = iOrigMat;
+    origObj = iOrigObj;
+    origVert = iOrigVert;
 }
 
 FrsMaterial::FrsMaterial(const FrsMaterial& m)
@@ -450,9 +485,29 @@ void FrsMaterial::setOrigMat(Material *oM)
 	origMat = oM;
 }
 
+void FrsMaterial::setOrigObj(Object *oO)
+{
+    origObj = oO;
+}
+
+void FrsMaterial::setOrigVert(MVert *oV)
+{
+    origVert = oV;
+}
+
 Material* FrsMaterial::getOrigMat()
 {
 	return origMat;
+}
+
+Object* FrsMaterial::getOrigObj()
+{
+    return origObj;
+}
+
+MVert* FrsMaterial::getOrigVert()
+{
+    return origVert;
 }
 
 void FrsMaterial::setPriority(const int priority)
