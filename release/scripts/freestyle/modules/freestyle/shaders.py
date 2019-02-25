@@ -571,7 +571,10 @@ class pyNikColorShader(StrokeShader):
             mat = self._func(it)
 
             r, g, b, *_ = mat.specular
-            origMat = mat.origMat
+            origMat = 0
+            if (mat.origMat):
+                origMat = mat.origMat
+                print("Something works!\n")
 
             X = 0.412453 * r + 0.35758 * g + 0.180423 * b
             Y = 0.212671 * r + 0.71516 * g + 0.072169 * b

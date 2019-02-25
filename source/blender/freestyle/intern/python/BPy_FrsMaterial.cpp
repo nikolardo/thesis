@@ -468,7 +468,11 @@ static int FrsMaterial_priority_set(BPy_FrsMaterial *self, PyObject *value, void
 
 static PyObject *FrsMaterial_origMat_get(BPy_FrsMaterial *self, void *UNUSED(closure))
 {
-    return PyCapsule_New(self->m->getOrigMat(), NULL,NULL);
+    if (self->m->getOrigMat()){
+        return PyCapsule_New(self->m->getOrigMat(), NULL,NULL);
+    } else {
+        return NULL;
+    }
 }
 
 static PyObject *FrsMaterial_origObj_get(BPy_FrsMaterial *self, void *UNUSED(closure))
