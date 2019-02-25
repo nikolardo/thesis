@@ -664,18 +664,19 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 			unsigned int i = 0;
 			bool found = false;
 //comment out the check to see if the material already exists; we'll need one each for this to work generally I think
-//            //for each vector of materials in the scene?
-//			for (vector<Material *>::iterator it = meshMaterials.begin(), itend = meshMaterials.end();
-//			     it != itend;
-//			     it++, i++)
-//			{
-//				if (*it == mat) {
+//this is only true if I attach the vertex to the material (might do)
+            //for each vector of materials in the scene?
+//            for (vector<Material *>::iterator it = meshMaterials.begin(), itend = meshMaterials.end();
+//                 it != itend;
+//                 it++, i++)
+//            {
+//                if (*it == mat) {
 //                    //if found, set the current index & also say it's found, & stop searching
-//					ls.currentMIndex = i;
+//                    ls.currentMIndex = i;
 //                    found = true;
-//                    //break;
-//				}
-//			}
+//                    break;
+//                }
+//            }
 
 			if (!found) {
                 //if not found, add the material to meshMaterials, add the FrsMaterial to meshFrsMaterials
