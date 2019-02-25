@@ -238,9 +238,13 @@ int MaterialColorShader::shade(Stroke& stroke) const
 		if (fun(v) < 0)
 			return -1;
 		//add code here to get the material from origMat, make origMat not a private member variable, or add getter
+        Material *whomst = fun.result.getOrigMat();
 		const float *diffuse = fun.result.diffuse();
+        float matSpecR = whomst->specr;
+        float matSpegG = whomst->specg;
+        float matSpecB = whomst->specb;
 		sv = dynamic_cast<StrokeVertex*>(&(*v));
-		sv->attribute().setColor(diffuse[0] * _coefficient, diffuse[1] * _coefficient, diffuse[2] * _coefficient);
+        sv->attribute().setColor(matSpecR * _coefficient, matSpegG * _coefficient, matSpecB * _coefficient);
 		sv->attribute().setAlpha(diffuse[3]);
 	}
 	return 0;

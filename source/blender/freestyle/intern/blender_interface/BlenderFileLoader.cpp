@@ -539,7 +539,6 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 	ls.currentMIndex = 0;
 
     FrsMaterial tmpMat;         //temporary FrsMaterial to build before adding to the [scene]
-
 	// We parse the vlak nodes again and import meshes while applying the clipping
 	// by the near and far view planes.
     int p;
