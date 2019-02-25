@@ -452,19 +452,35 @@ PyDoc_STRVAR(FrsMaterial_priority_doc,
 
 static PyObject *FrsMaterial_priority_get(BPy_FrsMaterial *self, void *UNUSED(closure))
 {
-	return PyLong_FromLong(self->m->priority());
+    return PyLong_FromLong(self->m->priority());
 }
 
 static int FrsMaterial_priority_set(BPy_FrsMaterial *self, PyObject *value, void *UNUSED(closure))
 {
-	int scalar;
-	if ((scalar = PyLong_AsLong(value)) == -1 && PyErr_Occurred()) {
-		PyErr_SetString(PyExc_TypeError, "value must be an integer");
-		return -1;
-	}
-	self->m->setPriority(scalar);
-	return 0;
+    int scalar;
+    if ((scalar = PyLong_AsLong(value)) == -1 && PyErr_Occurred()) {
+        PyErr_SetString(PyExc_TypeError, "value must be an integer");
+        return -1;
+    }
+    self->m->setPriority(scalar);
+    return 0;
 }
+
+static PyObject *FrsMaterial_origMat_get(BPy_FrsMaterial *self, void *UNUSED(closure))
+{
+    return PyCapsule_New(self->m->getOrigMat(), NULL,NULL);
+}
+
+static PyObject *FrsMaterial_origObj_get(BPy_FrsMaterial *self, void *UNUSED(closure))
+{
+    return PyCapsule_New(self->m->getOrigObj(), NULL,NULL);
+}
+
+static PyObject *FrsMaterial_origVert_get(BPy_FrsMaterial *self, void *UNUSED(closure))
+{
+    return PyCapsule_New(self->m->getOrigVert(), NULL,NULL);
+}
+
 
 static PyGetSetDef BPy_FrsMaterial_getseters[] = {
 	{(char *)"line", (getter)FrsMaterial_line_get, (setter)FrsMaterial_line_set,
@@ -479,9 +495,15 @@ static PyGetSetDef BPy_FrsMaterial_getseters[] = {
 	                     (char *)FrsMaterial_emission_doc, NULL},
 	{(char *)"shininess", (getter)FrsMaterial_shininess_get, (setter)FrsMaterial_shininess_set,
 	                      (char *)FrsMaterial_shininess_doc, NULL},
-	{(char *)"priority", (getter)FrsMaterial_priority_get, (setter)FrsMaterial_priority_set,
-	                     (char *)FrsMaterial_priority_doc, NULL},
-	{NULL, NULL, NULL, NULL, NULL}  /* Sentinel */
+    {(char *)"priority", (getter)FrsMaterial_priority_get, (setter)FrsMaterial_priority_set,
+                         (char *)FrsMaterial_priority_doc, NULL},
+    {(char *)"origMat", (getter)FrsMaterial_origMat_get, (setter)FrsMaterial_priority_set,
+                         (char *)FrsMaterial_priority_doc, NULL},
+    {(char *)"origObj", (getter)FrsMaterial_origObj_get, (setter)FrsMaterial_priority_set,
+                         (char *)FrsMaterial_priority_doc, NULL},
+    {(char *)"origVert", (getter)FrsMaterial_origVert_get, (setter)FrsMaterial_priority_set,
+                         (char *)FrsMaterial_priority_doc, NULL},
+    {NULL, NULL, NULL, NULL, NULL}  /* Sentinel */
 };
 
 static PyObject *BPy_FrsMaterial_richcmpr(PyObject *objectA, PyObject *objectB, int comparison_type)

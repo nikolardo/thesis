@@ -74,6 +74,7 @@ __all__ = (
     "pyInterpolateColorShader",
     "pyLengthDependingBackboneStretcherShader",
     "pyMaterialColorShader",
+    "pyNikColorShader",
     "pyModulateAlphaShader",
     "pyNonLinearVaryingThicknessShader",
     "pyPerlinNoise1DShader",
@@ -509,6 +510,68 @@ class pyMaterialColorShader(StrokeShader):
             mat = self._func(it)
 
             r, g, b, *_ = mat.diffuse
+
+            X = 0.412453 * r + 0.35758 * g + 0.180423 * b
+            Y = 0.212671 * r + 0.71516 * g + 0.072169 * b
+            Z = 0.019334 * r + 0.11919 * g + 0.950227 * b
+
+            if not any((X, Y, Z)):
+                X = Y = Z = 0.01
+
+            u = 4.0 * X / (X + 15.0 * Y + 3.0 * Z)
+            v = 9.0 * Y / (X + 15.0 * Y + 3.0 * Z)
+
+            L= 116. * pow((Y/Yn),(1./3.)) - 16
+            U = 13. * L * (u - un)
+            V = 13. * L * (v - vn)
+
+            if L > self._threshold:
+                L /= 1.3
+                U += 10.
+            else:
+                L = L + 2.5 * (100-L) * 0.2
+                U /= 3.0
+                V /= 3.0
+
+            u = U / (13.0 * L) + un
+            v = V / (13.0 * L) + vn
+
+            Y = Yn * pow(((L+16.)/116.), 3.)
+            X = -9. * Y * u / ((u - 4.)* v - u * v)
+            Z = (9. * Y - 15*v*Y - v*X) /( 3. * v)
+
+            r = 3.240479 * X - 1.53715 * Y - 0.498535 * Z
+            g = -0.969256 * X + 1.875991 * Y + 0.041556 * Z
+            b = 0.055648 * X - 0.204043 * Y + 1.057311 * Z
+
+            r = max(0, r)
+            g = max(0, g)
+            b = max(0, b)
+
+            svert.attribute.color = (r, g, b)
+
+class pyNikColorShader(StrokeShader):
+    """
+    Assigns the color of the underlying material to the stroke.
+    """
+    def __init__(self, threshold=50):
+        StrokeShader.__init__(self)
+        self._threshold = threshold
+        self._func = MaterialF0D()
+
+    def shade(self, stroke):
+        xn = 0.312713
+        yn = 0.329016
+        Yn = 1.0
+        un = 4.0 * xn / (-2.0 * xn + 12.0 * yn + 3.0)
+        vn = 9.0 * yn / (-2.0 * xn + 12.0 * yn + 3.0)
+
+        it = Interface0DIterator(stroke)
+        for svert in it:
+            mat = self._func(it)
+
+            r, g, b, *_ = mat.specular
+            origMat = mat.origMat
 
             X = 0.412453 * r + 0.35758 * g + 0.180423 * b
             Y = 0.212671 * r + 0.71516 * g + 0.072169 * b
