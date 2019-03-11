@@ -650,13 +650,13 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
             tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);                   //sets specular
 
             //apply vertex color to Freestyle Line Color here
-            int origIndex = *obr->vlaknodes->origindex;
+            //int origIndex = *obr->vlaknodes->origindex;
 //            MVert thisVert = verts[origIndex];
 
             //vertexColors = new MLoopCol[10];
-            vertexColors[0].a = 1;
+            //vertexColors[0].a = 1;
 
-            if (vertexColors != NULL){
+            if (vertexColors != nullptr){
                 MLoopCol first = vertexColors[p*4];
                 MLoopCol second = vertexColors[p*4+1];
                 MLoopCol third = vertexColors[p*4+2];
