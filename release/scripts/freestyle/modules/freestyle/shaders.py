@@ -573,9 +573,9 @@ class pyNikColorShader(StrokeShader):
             r, g, b, *_ = mat.specular
             origMat = 0
             if (mat.origMat):
-                origMat = PyCapsule_GetPointer(mat.origMat, NULL)
+                origMat = mat.origMat
                 print(origMat)
-                #r = origMat.specular_color[0]
+                r = origMat.specular_color[0]
                 #g = origMat.specular_color[1]
                 #b = origMat.specular_color[2]
 

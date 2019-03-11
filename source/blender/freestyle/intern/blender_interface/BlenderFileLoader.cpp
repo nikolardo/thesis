@@ -402,6 +402,12 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
     //my code:
     Mesh *data = (Mesh *)obr->ob->data;
     MVert *verts = data->mvert;
+    MLoopCol *vertexColors = data->mloopcol;
+    //attempt to look at VertexColors
+    //they do not help
+    //printf("%d\n",(int)vertexColors[0].b);
+
+
 
 #if 0
 
@@ -642,11 +648,39 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
             tmpMat.setLine(mat->line_col[0], mat->line_col[1], mat->line_col[2], mat->line_col[3]); //sets freestyle line color
             tmpMat.setDiffuse(mat->r, mat->g, mat->b, mat->alpha);                                  //sets diffuse
             tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);                   //sets specular
-            tmpMat.setOrigMat(mat);                                                                 //I set the original material
-            tmpMat.setOrigObj(obr->ob);       //push through the original object
+
+            //apply vertex color to Freestyle Line Color here
+            int origIndex = *obr->vlaknodes->origindex;
+//            MVert thisVert = verts[origIndex];
+
+            //vertexColors = new MLoopCol[10];
+            vertexColors[0].a = 1;
+
+            if (vertexColors != NULL){
+                MLoopCol first = vertexColors[p*4];
+                MLoopCol second = vertexColors[p*4+1];
+                MLoopCol third = vertexColors[p*4+2];
+                MLoopCol fourth = vertexColors[p*4+3];
+                float red = (first.r+second.r+third.r+fourth.r)/(255.0*4);
+                float green = (first.g+second.g+third.g+fourth.g)/(255.0*4);
+                float blue = (first.b+second.b+third.b+fourth.b)/(255.0*4);
+                float alpha = (first.a+second.a+third.a+fourth.a)/(255.0*4);
+                tmpMat.setLine(red, green, blue, alpha);
+            } else {
+                printf("what\n");
+            }
+
+            //just one layer at a time?
+            //work if we can get the data here which says which layer we want to do
+            //that's the todo
+
+
+            //tmpMat.setOrigMat(mat);                                                                 //I set the original material
+            //tmpMat.setOrigObj(obr->ob);       //push through the original object
             //tmpMat.setOrigVert()             //push through the original vertex here. This will need to be gotten somehow from a combination of the coordinates and the original object? Or, leave the coordinates as they are and do that at the end. (Should figure out how to do it here.)
             //testing //tmpMat.setDiffuse(tmpMat.getOrigMat()->specr, tmpMat.getOrigMat()->specg, tmpMat.getOrigMat()->specb, tmpMat.getOrigMat()->spectra);
-			float s = 1.0 * (mat->har + 1) / 4 ; // in Blender: [1;511] => in OpenGL: [0;128]
+
+            float s = 1.0 * (mat->har + 1) / 4 ; // in Blender: [1;511] => in OpenGL: [0;128]
 			if (s > 128.f)
 				s = 128.f;
             tmpMat.setShininess(s);     //sets shininess
