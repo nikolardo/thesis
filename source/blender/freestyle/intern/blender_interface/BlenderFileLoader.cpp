@@ -401,7 +401,8 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
 
     //my code:
     Mesh *data = (Mesh *)obr->ob->data;
-    MVert *verts = data->mvert;
+//    MPoly *polies = data->mpoly;
+//    MVert *verts = data->mvert;
     MLoopCol *vertexColors = data->mloopcol;
     //attempt to look at VertexColors
     //they do not help
@@ -650,25 +651,53 @@ void BlenderFileLoader::insertShapeNode(ObjectInstanceRen *obi, int id)
             tmpMat.setSpecular(mat->specr, mat->specg, mat->specb, mat->spectra);                   //sets specular
 
             //apply vertex color to Freestyle Line Color here
-            //int origIndex = *obr->vlaknodes->origindex;
-//            MVert thisVert = verts[origIndex];
 
             //vertexColors = new MLoopCol[10];
             //vertexColors[0].a = 1;
 
             if (vertexColors != nullptr){
+                float red, green, blue, alpha;
+
                 MLoopCol first = vertexColors[p*4];
                 MLoopCol second = vertexColors[p*4+1];
                 MLoopCol third = vertexColors[p*4+2];
-                MLoopCol fourth = vertexColors[p*4+3];
-                float red = (first.r+second.r+third.r+fourth.r)/(255.0*4);
-                float green = (first.g+second.g+third.g+fourth.g)/(255.0*4);
-                float blue = (first.b+second.b+third.b+fourth.b)/(255.0*4);
-                float alpha = (first.a+second.a+third.a+fourth.a)/(255.0*4);
+
+                float firstr = first.r/255.0;
+                float firstg = first.g/255.0;
+                float firstb = first.b/255.0;
+                float secondr = second.r/255.0;
+                float secondg = second.g/255.0;
+                float secondb = second.b/255.0;
+                float thirdr = third.r/255.0;
+                float thirdg = third.g/255.0;
+                float thirdb = third.b/255.0;
+
+                if (data->mpoly[p].totloop == 4){
+                    MLoopCol fourth = vertexColors[p*4+3];
+                    float fourthr = fourth.r/255.0;
+                    float fourthg = fourth.g/255.0;
+                    float fourthb = fourth.b/255.0;
+                    red = (firstr+secondr+thirdr+fourthr)/(4.0);
+                    green = (firstg+secondg+thirdg+fourthg)/(4.0);
+                    blue = (firstb+secondb+thirdb+fourthb)/(4.0);
+                    alpha = 1;
+                } else if (data->mpoly[p].totloop == 3){
+                    red = (firstr+secondr+thirdr)/(3.0);
+                    green = (firstg+secondg+thirdg)/(3.0);
+                    blue = (firstb+secondb+thirdb)/(3.0);
+                    alpha = 1;
+                } else {
+                    red = 0;
+                    green = 0;
+                    blue = 0;
+                    alpha = 1;
+                }
+                printf("totloop: %i\n",data->mpoly[p].totloop);
+                printf("flag: %x\n",data->mpoly[0].flag);
+
                 tmpMat.setLine(red, green, blue, alpha);
-            } else {
-                printf("what\n");
             }
+//            printf("%i\n",data->mpoly[p].totloop);
 
             //just one layer at a time?
             //work if we can get the data here which says which layer we want to do
